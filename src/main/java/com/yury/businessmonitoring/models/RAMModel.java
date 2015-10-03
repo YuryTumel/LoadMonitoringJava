@@ -6,6 +6,7 @@
 package com.yury.businessmonitoring.models;
 
 import com.yury.businessmonitoring.interfaces.IModel;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -15,11 +16,17 @@ import java.util.Date;
 public class RAMModel extends IModel{
     private int ID;
     private int freeMemory;
-    private Date date;
+    private LocalDateTime date;
+    
+    public RAMModel (int ID, int freeMemory, LocalDateTime date) {
+        this.ID = ID;
+        this.freeMemory = freeMemory;
+        this.date = date;
+    }
     
     public RAMModel(int freeMemory) {
         this.freeMemory = freeMemory;
-        this.date = new Date();
+        this.date = LocalDateTime.now();
     }
 
     /**
@@ -39,14 +46,14 @@ public class RAMModel extends IModel{
     /**
      * @return the date
      */
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
     /**
      * @param date the date to set
      */
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
