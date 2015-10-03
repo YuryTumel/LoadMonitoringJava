@@ -15,7 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,8 +26,9 @@ import java.util.logging.Logger;
  */
 public class JdbcStorage implements IStorage {
     private final Connection connection;
+    private final String RAM_INSERT_QUERY = "INSERT INTO ram (free_memory, date) VALUES (?,?);";
+    private final String RAM_SELECT_QUERY = "SELECT * FROM ram ORDER BY date LIMIT ?;";
     
-    private final String RAM_INSERT_QUERY = "INSERT INTO ram (free_memory, date) VALUES (?,?);"; 
     public JdbcStorage() {
         try {
             Settings settings = Settings.getInstance();
@@ -46,7 +48,7 @@ public class JdbcStorage implements IStorage {
             try {
                 query = connection.prepareStatement(RAM_INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
                 query.setInt(1, ram.getFreeMemory());
-                query.setTimestamp(2, new java.sql.Timestamp(ram.getDate().getTime()));
+                query.setTimestamp(2, java.sql.Timestamp.valueOf(ram.getDate()));
             } catch (SQLException ex) {
                 Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -76,13 +78,36 @@ public class JdbcStorage implements IStorage {
     }
 
     @Override
-    public <T extends IModel> T get(int id) {
+    public <T extends IModel> T get(Class modelClass, int id) {
         throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
-    public <T extends IModel> Collection<T> getList() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public <T extends IModel> List<T> getList(Class modelClass, int count) {
+        List<T> resultList = null;
+        PreparedStatement query = null;
+        if (count <= 0)
+            throw new IllegalStateException("Cannot limit selection by not natural value");
+        if (modelClass == RAMModel.class) {
+            try {
+                query = connection.prepareStatement(RAM_SELECT_QUERY);
+                query.setInt(1, count);
+            } catch (SQLException ex) {
+                Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        try (ResultSet rs = query.executeQuery()) {
+            if (modelClass == RAMModel.class) {
+                if (rs.first())
+                    resultList = new ArrayList<T>(count);
+                while (rs.next())
+                    resultList.add((T) new RAMModel(rs.getInt(1), 
+                            rs.getInt(2), rs.getTimestamp(3).toLocalDateTime()));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return resultList;
     }
 
     @Override
