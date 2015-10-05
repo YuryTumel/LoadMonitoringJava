@@ -25,10 +25,11 @@ import java.util.logging.Logger;
  * @author Юрий
  */
 public class JdbcStorage implements IStorage {
+
     private final Connection connection;
     private final String RAM_INSERT_QUERY = "INSERT INTO ram (free_memory, date) VALUES (?,?);";
     private final String RAM_SELECT_QUERY = "SELECT * FROM ram ORDER BY date LIMIT ?;";
-    
+
     public JdbcStorage() {
         try {
             Settings settings = Settings.getInstance();
@@ -39,7 +40,7 @@ public class JdbcStorage implements IStorage {
             throw new IllegalStateException(ex);
         }
     }
-    
+
     @Override
     public <T extends IModel> int add(T model) {
         PreparedStatement query = null;
@@ -58,9 +59,10 @@ public class JdbcStorage implements IStorage {
         } catch (SQLException ex) {
             Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try (ResultSet keys = query.getGeneratedKeys()) {            
-            if (keys != null && keys.next())
+        try (ResultSet keys = query.getGeneratedKeys()) {
+            if (keys != null && keys.next()) {
                 return keys.getInt(1);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -74,20 +76,26 @@ public class JdbcStorage implements IStorage {
 
     @Override
     public <T extends IModel> void delete(T model) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <T extends IModel> T get(Class modelClass, int id) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public <T extends IModel> T get(Class modelClass, Object propertyValue, String propertyName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public <T extends IModel> List<T> getList(Class modelClass, int count) {
         List<T> resultList = null;
         PreparedStatement query = null;
-        if (count <= 0)
+        if (count <= 0) {
             throw new IllegalStateException("Cannot limit selection by not natural value");
+        }
         if (modelClass == RAMModel.class) {
             try {
                 query = connection.prepareStatement(RAM_SELECT_QUERY);
@@ -98,11 +106,13 @@ public class JdbcStorage implements IStorage {
         }
         try (ResultSet rs = query.executeQuery()) {
             if (modelClass == RAMModel.class) {
-                if (rs.first())
+                if (rs.first()) {
                     resultList = new ArrayList<T>(count);
-                while (rs.next())
-                    resultList.add((T) new RAMModel(rs.getInt(1), 
+                }
+                while (rs.next()) {
+                    resultList.add((T) new RAMModel(rs.getInt(1),
                             rs.getInt(2), rs.getTimestamp(3).toLocalDateTime()));
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
@@ -118,5 +128,4 @@ public class JdbcStorage implements IStorage {
             Logger.getLogger(JdbcStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }
