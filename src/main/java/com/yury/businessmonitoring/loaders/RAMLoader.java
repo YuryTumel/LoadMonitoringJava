@@ -5,7 +5,7 @@
  */
 package com.yury.businessmonitoring.loaders;
 
-import com.yury.businessmonitoring.interfaces.IRAMLoader;
+import com.yury.businessmonitoring.interfaces.ILoader;
 import java.util.List;
 import com.yury.businessmonitoring.models.RAMModel;
 
@@ -13,7 +13,7 @@ import com.yury.businessmonitoring.models.RAMModel;
  *
  * @author Юрий
  */
-public class RAMLoader implements IRAMLoader {
+public class RAMLoader implements ILoader {
     @Override
     public List<RAMModel> load() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

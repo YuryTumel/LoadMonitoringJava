@@ -16,6 +16,7 @@ public interface IStorage {
     public <T extends IModel> void edit(T model);
     public <T extends IModel> void delete(T model);
     public <T extends IModel> T get(Class modelClass, final int id);
+    public <T extends IModel> T get(Class modelClass, final Object propertyValue, String propertyName);
     public <T extends IModel> List<T> getList(Class modelClass, int count);
     public void close();
 }

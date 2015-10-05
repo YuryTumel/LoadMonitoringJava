@@ -9,7 +9,24 @@ package com.yury.businessmonitoring.interfaces;
  *
  * @author Юрий
  */
-public interface IMonitor {
-    public void start();
-    public void stop();
+public abstract class IMonitor {
+    protected IDumper dumper;
+    protected Thread monitoringThread;
+    
+    protected abstract void doMonitoring();
+    
+    public IMonitor (IDumper dumper) {
+        this.dumper = dumper;
+    }
+    
+    public void start() {
+        if (monitoringThread == null) {
+            monitoringThread = new Thread(this::doMonitoring);
+            monitoringThread.start();
+        }
+    }
+    
+    public void stop() { monitoringThread.interrupt(); }
+    
+    public Thread getMonitoringThread() { return monitoringThread; }
 }

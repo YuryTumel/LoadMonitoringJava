@@ -5,13 +5,18 @@
  */
 package com.yury.businessmonitoring.interfaces;
 
-import com.yury.businessmonitoring.models.RAMModel;
-
 /**
  *
  * @author Юрий
  */
-public interface IRAMDumper {
-    public void write(RAMModel model);
-    public void close();
+public abstract class IDumper {
+    protected IStorage storage;
+
+    public IDumper(IStorage storage) {
+        this.storage = storage;
+    }
+    
+    public void close() { storage.close(); }
+    
+    public abstract int write(IModel model);
 }

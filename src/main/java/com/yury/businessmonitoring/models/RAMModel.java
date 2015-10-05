@@ -20,13 +20,13 @@ import javax.persistence.Table;
 public class RAMModel extends IModel{
     @Id
     @Column(name = "id")
-    @GeneratedValue (strategy = GenerationType.AUTO)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int ID;
     
     @Column(name = "free_memory", nullable = false)
     private int freeMemory;
     
-    @Column(name = "date", nullable = false)
+    @Column(name = "written", nullable = false)
     private LocalDateTime date;
     
     public RAMModel() {}

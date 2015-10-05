@@ -12,6 +12,6 @@ import com.yury.businessmonitoring.models.RAMModel;
  *
  * @author Юрий
  */
-public interface IRAMLoader {
+public interface ILoader {
     public List<RAMModel> load();
 }
